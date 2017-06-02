@@ -23,6 +23,12 @@ struct InstrumentViewModel {
     let keyboardViewModels: [KeyBoardCellViewModel]
     let accessoryViewModels: [AccessoryViewModel]
     
+    static let cellTypes: [AnyCellConfigurable.Type] = [
+        GuitarTableViewCell.self,
+        KeyboardTableViewCell.self,
+        AccessoryItemTableViewCell.self
+    ]
+    
     var sectionCount: Int {
         return Section.all.count
     }
@@ -48,7 +54,7 @@ struct InstrumentViewModel {
         }
     }
     
-    func viewModel(for indexPath: IndexPath) -> CellViewModelType {
+    func viewModel(for indexPath: IndexPath) -> AnyCellViewModelType {
         guard let section = Section(rawValue: indexPath.section) else {
             fatalError("Invalid section")
         }
@@ -63,19 +69,4 @@ struct InstrumentViewModel {
         }
 
     }
-    
-    func cellType(for indexPath: IndexPath) -> NibLoadable.Type {
-        guard let section = Section(rawValue: indexPath.section) else {
-            fatalError("Invalid section")
-        }
-        
-        switch section {
-        case .guitar:
-            return GuitarTableViewCell.self
-        case .keyboard:
-            return KeyboardTableViewCell.self
-        case .accessory:
-            return AccessoryItemTableViewCell.self
-        }
-    }    
 }

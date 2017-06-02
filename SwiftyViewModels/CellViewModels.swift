@@ -9,15 +9,38 @@
 import Foundation
 import UIKit
 
-protocol CellViewModelType { }
+protocol AnyCellViewModelType {
+    var reuseIdentifier: String { get }
+}
 
-protocol CellConfigurable {
+protocol CellViewModelType: AnyCellViewModelType {
+    associatedtype CellType: AnyCellConfigurable
+}
+
+extension CellViewModelType {
+    var reuseIdentifier: String {
+         return CellType.self.reuseIdentifier
+    }
+}
+
+protocol AnyCellConfigurable: NibLoadable {
+    func configure(with viewModel: AnyCellViewModelType)
+}
+
+protocol CellConfigurable: AnyCellConfigurable {
     associatedtype ViewModelType: CellViewModelType
     func configure(with viewModel: ViewModelType)
 }
 
-struct KeyBoardCellViewModel: CellViewModelType {
+extension CellConfigurable {
+    func configure(with viewModel: AnyCellViewModelType) {
+        configure(with: viewModel as! ViewModelType)
+    }
+}
 
+struct KeyBoardCellViewModel: CellViewModelType {
+    typealias CellType = KeyboardTableViewCell
+    
     let titleField: String
     let synthesizerField: String
     let numberOfKeyField: String
@@ -32,7 +55,8 @@ struct KeyBoardCellViewModel: CellViewModelType {
 }
 
 struct GuitarCellViewModel: CellViewModelType {
-    
+    typealias CellType = GuitarTableViewCell
+
     let titleField: String
     let stringField: String
     let image: UIImage
@@ -52,7 +76,8 @@ struct GuitarCellViewModel: CellViewModelType {
 }
 
 struct AccessoryViewModel: CellViewModelType {
-    
+    typealias CellType = AccessoryItemTableViewCell
+
     let titleField: String
     let detailField: String
     let image: UIImage

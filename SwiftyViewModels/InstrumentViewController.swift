@@ -25,9 +25,9 @@ class InstrumentViewController: UIViewController {
     }
     
     func registerCells() {
-        tableView.register(cell: GuitarTableViewCell.self)
-        tableView.register(cell: KeyboardTableViewCell.self)
-        tableView.register(cell: AccessoryItemTableViewCell.self)
+        for cellType in InstrumentViewModel.cellTypes {
+            tableView.register(cell: cellType)
+        }
     }
 }
 
@@ -42,37 +42,15 @@ extension InstrumentViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cellType = viewModel.cellType(for: indexPath)
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellType.reuseIdentifier, for: indexPath)
-
         let cellViewModel = viewModel.viewModel(for: indexPath)
-        
-        configureCell(cell, cellViewModel: cellViewModel)
-        
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellViewModel.reuseIdentifier, for: indexPath)
+        (cell as! AnyCellConfigurable).configure(with: cellViewModel)
         return cell
     }
     
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 128.0
-    }
-    
-    func configureCell(_ cell: UITableViewCell, cellViewModel: CellViewModelType) {
-        
-        switch (cell, cellViewModel) {
-        case (let cell as GuitarTableViewCell, let cellViewModel as GuitarCellViewModel):
-            cell.configure(with: cellViewModel)
-        case (let cell as KeyboardTableViewCell, let cellViewModel as KeyBoardCellViewModel):
-            cell.configure(with: cellViewModel)
-        case (let cell as AccessoryItemTableViewCell, let cellViewModel as AccessoryViewModel):
-            cell.configure(with: cellViewModel)
-        default:
-            fatalError("Mismatched cell and view model")
-            
-        }
-
     }
 }
 
